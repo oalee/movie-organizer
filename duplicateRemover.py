@@ -132,6 +132,8 @@ if pars.r:
     print dirs
 
 
+#db.deleteAll()
+    
 folderMakes(dirs)
 checkFiles()
  
