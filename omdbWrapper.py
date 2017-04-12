@@ -6,13 +6,17 @@ Created on Wed Apr 12 12:45:23 2017
 @author: al
 """
 import requests
-import json
 
 def findMovieByName(name):
+    movie = searchMovie(name, "t")
+    if  movie == None:
+        print searchMovie(name, "s")
+    
+def searchMovie(name, typeSearch):
+    
     url = 'http://www.omdbapi.com/'
-    data = {"t" : name}
+    data = {typeSearch : name}
     response = requests.get(url, data)
-    print response.json()
     if response.status_code != 200:
         return
         

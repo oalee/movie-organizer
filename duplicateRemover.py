@@ -43,8 +43,8 @@ def currectName(name):
             doReplace = False
             
         if j == '-':
-            if temp[-1] != ' ':
-                temp += j
+            if temp[-2] == ' ':
+                temp = temp[:-2]
 
     name = temp.split(" ")
     index = len(name)
@@ -78,14 +78,17 @@ def init_parser():
 
 
 
-def findMovies(directories):
+def getMovieList(dirs):
     movies_list = []
-    for dir in directories:
+    for dir in dirs:
         if Path(dir).is_dir():
             movies_list += [(str(x).split("/")[-1] , str(x) , du(str(x))) for x in Path(dir).iterdir()]
-            #Movie Folder Name , Location and size
+            #Movie  Name , Location and size
+    return movies_list
     
-    for movie in movies_list:
+def findMovies(directories):
+    
+    for movie in getMovieList(directories):
         if db.movieExist(movie[1]) :
             continue
         omovie = omdb.findMovieByName(currectName(movie[0]))
@@ -96,11 +99,26 @@ def findMovies(directories):
             omovie['size'] = movie[2]
             db.insert(omovie)
             
+def folderMakes(direcotires):
+    for movie in getMovieList(direcotires):
+        if ".mkv" in movie[0] or ".mp4" in movie[0] or ".avi" in movie[0]:
+            print movie
+            movieDir = ' '.join(movie[1].split(".")[:-1])
+            os.mkdir(movieDir)
+            os.rename(movie[1], movieDir+"/"+movie[0])
+            
             
             
 def printAllMovies():
     for movie in db.getCollection().find():
         print movie['Title'], movie['Year'], movie['path'], movie['size']
+
+
+def checkFiles():
+    for movie in db.getCollection().find():
+        if not os.path.exists(movie['path']) :
+            print 'no', movie['path']
+            db.deletePath(movie['path'])
 
 pars = init_parser()
 
@@ -113,8 +131,10 @@ if pars.r:
     dirs = newDir
     print dirs
 
+
+folderMakes(dirs)
+checkFiles()
+ 
 findMovies(dirs)
 printAllMovies()
-
-
-    
+   

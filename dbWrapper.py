@@ -37,3 +37,6 @@ def insert(movie):
     
 def deleteAll():
     getCollection().remove()
+    
+def deletePath(path):
+    getCollection().remove( {'path' : path} )
