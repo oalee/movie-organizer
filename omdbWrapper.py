@@ -12,6 +12,7 @@ def findMovieByName(name):
     url = 'http://www.omdbapi.com/'
     data = {"t" : name}
     response = requests.get(url, data)
+    print response.json()
     if response.status_code != 200:
         return
         

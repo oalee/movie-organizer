@@ -18,8 +18,10 @@ from pathlib import Path
 def currectName(name):
     name = name.lower()
     cn = ""
-    qualities = ["720" , "1080" , "brip" , "bluray" , "dvd" ,"m-hd", "hd" , "web" , "brrip", "criterion"
-    , "blu-ray" , "director's cut" , "bdrip" , "x264" , "hdtv" , "xvid" , "ntsc" ]
+    qualities = ["720" , "1080" , "brip" , "bluray" , "dvd" ,
+    "m-hd", "hd" , "web" , "brrip", "criterion", "director's cut"
+    , "blu-ray" , "directors cut" ,"director's cut" , "remastered"
+    "bdrip" , "x264" , "hdtv" , "xvid" , "ntsc" ]
     for q in qualities:
         if name.count(q) > 0:
             cn = q
@@ -67,6 +69,7 @@ def init_parser():
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument("--dirs", nargs='+', dest="dirs",
                         help="parent folder where movies are")
+    parser.add_argument('-r',  default=False, action="store_true")
     return parser.parse_args(sys.argv[1:])
 
 
@@ -74,15 +77,16 @@ def init_parser():
 def findMovies(directories):
     movies_list = []
     for dir in directories:
-        movies_list += [(str(x).split("/")[-1] , str(x) , du(str(x))) for x in Path(dir).iterdir()]
-        #Movie Folder Name , Location and size
+        if Path(dir).is_dir():
+            movies_list += [(str(x).split("/")[-1] , str(x) , du(str(x))) for x in Path(dir).iterdir()]
+            #Movie Folder Name , Location and size
     
     for movie in movies_list:
         if db.movieExist(movie[1]) :
             continue
         omovie = omdb.findMovieByName(currectName(movie[0]))
         if omovie == None:
-            print 'Err, Didnt find' , movie[1]
+            print 'Err, Didnt find' , movie[1], "," ,currectName(movie[0])
         else :
             omovie['path'] = movie[1]
             omovie['size'] = movie[2]
@@ -92,12 +96,20 @@ def findMovies(directories):
             
 def printAllMovies():
     for movie in db.getCollection().find():
-        print movie
-            
+        print movie['Title'], movie['Year'], movie['path'], movie['size']
+
 pars = init_parser()
 
+dirs = pars.dirs
 
-findMovies(pars.dirs)
+if pars.r:
+    newDir = []
+    for dir in dirs:
+        newDir += [x for x in Path(dir).iterdir()]
+    dirs = newDir
+    print dirs
+
+findMovies(dirs)
 printAllMovies()
 
 

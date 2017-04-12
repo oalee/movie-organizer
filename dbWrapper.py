@@ -34,3 +34,6 @@ def movieExist(path):
     
 def insert(movie):
     getCollection().insert_one(movie)
+    
+def deleteAll():
+    getCollection().remove()
