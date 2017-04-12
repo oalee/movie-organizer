@@ -28,7 +28,7 @@ def currectName(name):
             break
     if len(cn)> 0:
         name = name.split(cn)[0]
-    forbidden_list = [ "-" , ")" , "(" , "]" , "[", "{" , "}"]
+    forbidden_list = [ ")" , "(" , "]" , "[", "{" , "}"]
     name = name.replace("." , " ").replace('_' , " ")
     doReplace = False
     temp = ""
@@ -41,6 +41,10 @@ def currectName(name):
 
         if j == ']':
             doReplace = False
+            
+        if j == '-':
+            if temp[-1] != ' ':
+                temp += j
 
     name = temp.split(" ")
     index = len(name)
