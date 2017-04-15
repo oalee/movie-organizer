@@ -15,6 +15,14 @@ def get_size(start_path = '.'):
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
     return total_size
+
+def getDirectoriesRecursive(dirs):
+    print 'get rec ' , dirs
+    newDir = []
+    for dir in dirs:
+        if get_size(str(dir)) > 200 * 1024 * 1024:
+            newDir += [ x for x in Path(dir).iterdir() ]
+    return newDir +  [getDirectoriesRecursive([j]) for j in newDir ]
     
 def getMovieList(dirs):
     movies_list = []

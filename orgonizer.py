@@ -11,7 +11,7 @@ import omdbWrapper as omdb
 
 import argparse
 import sys
-from fileTools import folderMakes, checkFiles, getMovieList
+from fileTools import folderMakes, checkFiles, getMovieList, get_size
 from pathlib import Path
 
 
@@ -70,16 +70,30 @@ def init_parser():
     parser = argparse.ArgumentParser(description="Remove Duplicate movies where they have same imdb id")
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument("--dirs", nargs='*', dest="dirs",
-                        help="parent folder where movies are")
-    parser.add_argument('-r',  default=False, action="store_true")
-    parser.add_argument('-c', default=False, action="store_true")
-    parser.add_argument('-p', default=False, action="store_true")
-    parser.add_argument('-m', default=False, action="store_true")
-    parser.add_argument('--checkfiles', default=False, action="store_true", dest="checkfiles")
-    parser.add_argument('-d', default=False, action="store_true")
-    parser.add_argument('--ask', default=False, action="store_true")
-    parser.add_argument('--bigest', default=False, action="store_true")
-    parser.add_argument('--smallest', default=False, action="store_true")
+                        help="movie folders are in this directories")
+    parser.add_argument('--parent',  default=False, action="store_true",
+                        help="dirs object are treated as parent folder,\
+                        meaning sub directories have actual movie folder in them")
+    parser.add_argument('-c', default=False, action="store_true",
+                        help="clear database")
+    parser.add_argument('-p', default=False, action="store_true",
+                        help="print all movies in database")
+    parser.add_argument('-m', default=False, action="store_true",
+                        help="make folder for raw movie files\
+                        only folders are considered as movie file")
+    parser.add_argument('--checkfiles', default=False, action="store_true"
+                        , dest="checkfiles"
+                        , help="recheck database and files (deleted movies)")
+    parser.add_argument('-d', default=False, action="store_true",
+                        help="check duplicate movies")
+    parser.add_argument('--ask', default=False, action="store_true",
+                        help="ask every duplicate movie to save which one\
+                         . must use -d arg")
+    parser.add_argument('--bigest', default=False, action="store_true",
+                        help="save the bigest movie in case of duplicates. must use -d arg")
+    parser.add_argument('--smallest', default=False, action="store_true",
+                        help="save the smallest movie in case of duplicates. must use -d arg")
+    
 
     
     return parser.parse_args(sys.argv[1:])
@@ -111,7 +125,7 @@ if pars.c:
     db.deleteAll()
     exit()
 
-if pars.r:
+if pars.parent:
     newDir = []
     for dir in dirs:
         newDir += [x for x in Path(dir).iterdir()]
