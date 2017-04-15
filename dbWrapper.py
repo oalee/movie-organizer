@@ -41,9 +41,14 @@ def deleteAll():
 def deletePath(path):
     getCollection().remove( {'path' : path} )
     
+def updatePath(item, newPath):
+    print 'item ,', item 
+    item["path"] = newPath
+    getCollection().find_and_modify( { "_id" : item["_id"] }, item )
 
 def printAllMovies():
     for movie in getCollection().find():
+        print movie
         print movie['Title'], movie['Year'], movie['path'], movie['size']
 
 def getDuplicates():

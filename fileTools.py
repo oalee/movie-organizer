@@ -1,7 +1,7 @@
 
 import subprocess, os
 from pathlib import Path
-from shutil import rmtree
+from shutil import rmtree, move
 
 def du(path):
     """disk usage in human readable format (e.g. '2,1GB')"""
@@ -16,13 +16,6 @@ def get_size(start_path = '.'):
             total_size += os.path.getsize(fp)
     return total_size
 
-def getDirectoriesRecursive(dirs):
-    print 'get rec ' , dirs
-    newDir = []
-    for dir in dirs:
-        if get_size(str(dir)) > 200 * 1024 * 1024:
-            newDir += [ x for x in Path(dir).iterdir() ]
-    return newDir +  [getDirectoriesRecursive([j]) for j in newDir ]
     
 def getMovieList(dirs):
     movies_list = []
@@ -43,18 +36,30 @@ def getAllSubdirectories(dirs):
 def folderMakes(direcotires):
     
     for movie in getAllSubdirectories(direcotires):
-        if ".mkv" in movie[0] or ".mp4" in movie[0] or ".avi" in movie[0]:
-            print movie
+        if ".mkv" in movie[0] or ".mp4" in movie[0] or ".avi" in movie[0] or ".rar" in movie[0]:
+            print 'making folder for', movie
             movieDir = ' '.join(movie[1].split(".")[:-1])
             os.mkdir(movieDir)
             os.rename(movie[1], movieDir+"/"+movie[0])
             
+def renameMovieName( db):
+    for item in db.getCollection().find():
+        folderName = item['path'].split('/')[-1]
+        title = item['Title'].replace("/"," ")
+        if folderName != title :
+            newPath = '/'.join(item['path'].split('/')[:-1]) +"/" +title
+            print 'rename' , item['path'], newPath
+            
+            os.rename(item['path'], newPath)
+            db.updatePath(item, newPath)
+
             
 def checkFiles(db):
     for movie in db.getCollection().find():
         if not os.path.exists(movie['path']) :
             print 'no', movie['path']
             db.deletePath(movie['path'])
+            
             
 def deleteItem(movie, db):
     rmtree(movie['path'])

@@ -11,7 +11,7 @@ import omdbWrapper as omdb
 
 import argparse
 import sys
-from fileTools import folderMakes, checkFiles, getMovieList, get_size
+import fileTools as ft
 from pathlib import Path
 
 
@@ -94,7 +94,10 @@ def init_parser():
     parser.add_argument('--smallest', default=False, action="store_true",
                         help="save the smallest movie in case of duplicates. must use -d arg")
     
-
+    parser.add_argument('--name', default=False, action="store_true",
+                        help="corrects the name of folder to actual title")
+    
+        
     
     return parser.parse_args(sys.argv[1:])
 
@@ -102,7 +105,7 @@ def init_parser():
 
 def findMovies(directories):
     
-    for movie in getMovieList(directories):
+    for movie in ft.getMovieList(directories):
         if db.movieExist(movie[1]) :
             continue
         omovie = omdb.findMovieByName(currectName(movie[0]))
@@ -137,9 +140,9 @@ if len(dirs) < 1 :
     exit()
 
 if pars.m:
-    folderMakes(dirs)
+    ft.folderMakes(dirs)
 if pars.checkfiles:
-    checkFiles(db)
+    ft.checkFiles(db)
  
 findMovies(dirs)
 if pars.p:
@@ -149,4 +152,7 @@ if pars.d:
     for item, o in db.getDuplicates().iteritems():
         for j in o:
             print j['path'], j['size']/(1024*1024*1024.0) , "GB"
+
+if pars.name:
+    ft.renameMovieName(db)            
    
