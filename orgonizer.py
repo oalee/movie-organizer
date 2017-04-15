@@ -11,7 +11,7 @@ import omdbWrapper as omdb
 
 import argparse
 import sys
-from fileTools import folderMakes, checkFiles
+from fileTools import folderMakes, checkFiles, getMovieList
 from pathlib import Path
 
 
@@ -69,9 +69,13 @@ def currectName(name):
 def init_parser():
     parser = argparse.ArgumentParser(description="Remove Duplicate movies where they have same imdb id")
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
-    parser.add_argument("--dirs", nargs='+', dest="dirs",
+    parser.add_argument("--dirs", nargs='*', dest="dirs",
                         help="parent folder where movies are")
     parser.add_argument('-r',  default=False, action="store_true")
+    parser.add_argument('-c', default=False, action="store_true")
+    parser.add_argument('-p', default=False, action="store_true")
+    parser.add_argument('-m', default=False, action="store_true")
+    parser.add_argument('--checkfiles', default=False, action="store_true", dest="checkfiles")
     return parser.parse_args(sys.argv[1:])
 
 
@@ -100,6 +104,11 @@ pars = init_parser()
 
 dirs = pars.dirs
 
+
+if pars.c:
+    db.deleteAll()
+    exit()
+
 if pars.r:
     newDir = []
     for dir in dirs:
@@ -107,12 +116,16 @@ if pars.r:
     dirs = newDir
     print dirs
 
+if len(dirs) < 1 :
+    print 'atleast 1 directory must be selected';
+    exit()
 
-#db.deleteAll()
-    
-folderMakes(dirs)
-checkFiles(db)
+if pars.m:
+    folderMakes(dirs)
+if pars.checkfiles:
+    checkFiles(db)
  
 findMovies(dirs)
-printAllMovies()
+if pars.p:
+    printAllMovies()
    
