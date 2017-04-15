@@ -1,7 +1,7 @@
 
 import subprocess, os
 from pathlib import Path
-
+from shutil import rmtree
 
 def du(path):
     """disk usage in human readable format (e.g. '2,1GB')"""
@@ -47,3 +47,7 @@ def checkFiles(db):
         if not os.path.exists(movie['path']) :
             print 'no', movie['path']
             db.deletePath(movie['path'])
+            
+def deleteItem(movie, db):
+    rmtree(movie['path'])
+    db.deletePath(movie["path"])

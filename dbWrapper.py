@@ -40,3 +40,17 @@ def deleteAll():
     
 def deletePath(path):
     getCollection().remove( {'path' : path} )
+    
+
+def printAllMovies():
+    for movie in getCollection().find():
+        print movie['Title'], movie['Year'], movie['path'], movie['size']
+
+def getDuplicates():
+    movies = {}
+    for movie in getCollection().find():
+        if not movie["imdbID"] in movies:
+            movies[movie["imdbID"]] = [ x for x in findMoviesById(movie["imdbID"]) ]
+    return {k: v for k,v in movies.iteritems() if len(v) > 1}
+    
+    

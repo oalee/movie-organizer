@@ -35,13 +35,13 @@ def currectName(name):
     doReplace = False
     temp = ""
     for j in name:
-        if j == '[':
+        if j == '[' or j =='(' :
             doReplace = True
 
         if not doReplace and j not in forbidden_list:
             temp += j
 
-        if j == ']':
+        if j == ']' or j == ')':
             doReplace = False
             
         if j == '-':
@@ -76,6 +76,12 @@ def init_parser():
     parser.add_argument('-p', default=False, action="store_true")
     parser.add_argument('-m', default=False, action="store_true")
     parser.add_argument('--checkfiles', default=False, action="store_true", dest="checkfiles")
+    parser.add_argument('-d', default=False, action="store_true")
+    parser.add_argument('--ask', default=False, action="store_true")
+    parser.add_argument('--bigest', default=False, action="store_true")
+    parser.add_argument('--smallest', default=False, action="store_true")
+
+    
     return parser.parse_args(sys.argv[1:])
 
 
@@ -93,10 +99,6 @@ def findMovies(directories):
             omovie['size'] = movie[2]
             db.insert(omovie)
             
-            
-def printAllMovies():
-    for movie in db.getCollection().find():
-        print movie['Title'], movie['Year'], movie['path'], movie['size']
 
 
 
@@ -127,5 +129,10 @@ if pars.checkfiles:
  
 findMovies(dirs)
 if pars.p:
-    printAllMovies()
+    db.printAllMovies()
+
+if pars.d:
+    for item, o in db.getDuplicates().iteritems():
+        for j in o:
+            print j['path'], j['size']/(1024*1024*1024.0) , "GB"
    
