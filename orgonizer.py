@@ -11,17 +11,19 @@ import omdbWrapper as omdb
 
 import argparse
 import sys
-import os, time, subprocess
+from fileTools import folderMakes, checkFiles
 from pathlib import Path
+
 
 
 def currectName(name):
     name = name.lower()
     cn = ""
-    qualities = ["720" , "1080" , "brip" , "bluray" , "dvd" ,
-    "m-hd", "hd" , "web" , "brrip", "criterion", "director's cut"
+    qualities = [ "criterion", "director's cut"
     , "blu-ray" , "directors cut" ,"director's cut" , "remastered"
-    "bdrip" , "x264" , "hdtv" , "xvid" , "ntsc" ]
+    "bdrip" , "x264" , "hdtv" , "xvid" , "ntsc",
+    "720" , "1080" , "brip" , "bluray" , "dvd" ,
+    "m-hd", "hd" , "web" , "brrip", 'extended']
     for q in qualities:
         if name.count(q) > 0:
             cn = q
@@ -64,10 +66,6 @@ def currectName(name):
     return temp
     
     
-def du(path):
-    """disk usage in human readable format (e.g. '2,1GB')"""
-    return subprocess.check_output(['du','-sh', path]).split()[0].decode('utf-8')
-
 def init_parser():
     parser = argparse.ArgumentParser(description="Remove Duplicate movies where they have same imdb id")
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
@@ -78,14 +76,6 @@ def init_parser():
 
 
 
-def getMovieList(dirs):
-    movies_list = []
-    for dir in dirs:
-        if Path(dir).is_dir():
-            movies_list += [(str(x).split("/")[-1] , str(x) , du(str(x))) for x in Path(dir).iterdir()]
-            #Movie  Name , Location and size
-    return movies_list
-    
 def findMovies(directories):
     
     for movie in getMovieList(directories):
@@ -99,26 +89,12 @@ def findMovies(directories):
             omovie['size'] = movie[2]
             db.insert(omovie)
             
-def folderMakes(direcotires):
-    for movie in getMovieList(direcotires):
-        if ".mkv" in movie[0] or ".mp4" in movie[0] or ".avi" in movie[0]:
-            print movie
-            movieDir = ' '.join(movie[1].split(".")[:-1])
-            os.mkdir(movieDir)
-            os.rename(movie[1], movieDir+"/"+movie[0])
-            
-            
             
 def printAllMovies():
     for movie in db.getCollection().find():
         print movie['Title'], movie['Year'], movie['path'], movie['size']
 
 
-def checkFiles():
-    for movie in db.getCollection().find():
-        if not os.path.exists(movie['path']) :
-            print 'no', movie['path']
-            db.deletePath(movie['path'])
 
 pars = init_parser()
 
@@ -135,7 +111,7 @@ if pars.r:
 #db.deleteAll()
     
 folderMakes(dirs)
-checkFiles()
+checkFiles(db)
  
 findMovies(dirs)
 printAllMovies()

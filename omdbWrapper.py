@@ -29,3 +29,9 @@ def searchMovie(name, typeSearch):
         
     return res
     
+
+def checkFiles(db):
+    for movie in db.getCollection().find():
+        if not os.path.exists(movie['path']) :
+            print 'no', movie['path']
+            db.deletePath(movie['path'])
