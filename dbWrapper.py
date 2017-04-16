@@ -42,7 +42,6 @@ def deletePath(path):
     getCollection().remove( {'path' : path} )
     
 def updatePath(item, newPath):
-    print 'item ,', item 
     item["path"] = newPath
     getCollection().find_and_modify( { "_id" : item["_id"] }, item )
 
