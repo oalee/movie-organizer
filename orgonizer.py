@@ -70,17 +70,16 @@ def init_parser():
     parser = argparse.ArgumentParser(description="Remove Duplicate movies where they have same imdb id")
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument("--dirs", nargs='*', dest="dirs",
-                        help="movie folders are in this directories")
-    parser.add_argument('--parent',  default=False, action="store_true",
-                        help="dirs object are treated as parent folder,\
-                        meaning sub directories have actual movie folder in them")
+                        help="movies are in this directories")
+    parser.add_argument('--parents',nargs='*',
+                        help="parent folder where movie dirs are")
+    
     parser.add_argument('-c', default=False, action="store_true",
                         help="clear database")
     parser.add_argument('-p', default=False, action="store_true",
                         help="print all movies in database")
     parser.add_argument('-m', default=False, action="store_true",
-                        help="make folder for raw movie files\
-                        only folders are considered as movie file")
+                        help="make folders for movies")
     parser.add_argument('--checkfiles', default=False, action="store_true"
                         , dest="checkfiles"
                         , help="recheck database and files (deleted movies)")
@@ -122,17 +121,19 @@ def findMovies(directories):
 pars = init_parser()
 
 dirs = pars.dirs
+if dirs == None:
+    dirs = []
 
 
 if pars.c:
     db.deleteAll()
     exit()
 
-if pars.parent:
+if pars.parents:
     newDir = []
-    for dir in dirs:
+    for dir in pars.parents:
         newDir += [x for x in Path(dir).iterdir()]
-    dirs = newDir
+    dirs = newDir + dirs
     print dirs
 
 if len(dirs) < 1 :
@@ -150,7 +151,10 @@ if pars.p:
     db.printAllMovies()
 
 if pars.d:
-    for item, movies in db.getDuplicates().iteritems():
+    duplicates = db.getDuplicates()
+    if len(duplicates) == 0:
+        print 'No Duplicates found'
+    for item, movies in duplicates.iteritems():
 #        for j in o:
 #            print j['path'], j['size']/(1024*1024*1024.0) , "GB"
 #        print 'end dup movie'

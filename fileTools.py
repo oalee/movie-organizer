@@ -49,7 +49,9 @@ def renameMovieName( db):
         if folderName != title :
             newPath = '/'.join(item['path'].split('/')[:-1]) +"/" +title
             print 'rename' , item['path'], newPath
-            
+            if Path(newPath).exists():
+                print "Err, items new path already exists, remove duplicates first"
+                continue
             os.rename(item['path'], newPath)
             db.updatePath(item, newPath)
 
