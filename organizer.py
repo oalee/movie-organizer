@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 
-def currectName(name):
+def correctName(name):
     name = name.lower()
     while 1:
         cn = ""
@@ -114,13 +114,13 @@ def findMovies(directories):
     for movie in ft.getMovieList(directories):
         if db.movieExist(movie[1]) :
             continue
-        name = currectName(movie[0])
+        name = correctName(movie[0])
         omovie = omdb.findMovieByName(name)
         
         if "and" in name and omovie == None:
                 omovie = omdb.findMovieByName(name.replace("and","&"))
         if omovie == None:
-            print 'Err, Didnt find' , movie[1], "," ,currectName(movie[0])
+            print 'Err, Didnt find' , movie[1], "," ,correctName(movie[0])
             print "Enter Correct Name or press Enter for passing"
 
         while omovie == None:
