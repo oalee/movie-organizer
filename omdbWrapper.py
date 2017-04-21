@@ -11,6 +11,7 @@ def findMovieByName(name):
     movie = searchMovie(name, "t")
     if  movie == None:
         print searchMovie(name, "s")
+        
         return 
     else:
         return movie

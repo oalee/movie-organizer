@@ -95,3 +95,28 @@ def deleteMovies(movies, db):
         print 'deleting', movie['path']
         rmtree(movie['path'])
         db.deletePath(movie["path"])
+        
+def makeYearlyFolders(db):
+    for movie in db.getCollection().find():
+        moviePath = movie['path']
+        newPath = "/".join(moviePath.split("/")[:-2]) +"/"+\
+         movie["Year"].encode('utf8').replace('\xe2\x80\x93','-').split("-")[0]
+        if not Path(newPath).exists():
+            os.mkdir(newPath)
+            
+        title = movie['Title'].replace("/"," ")
+        title = title.encode('ascii', 'ignore').decode('ascii')
+        newPath = newPath+"/"+title
+        if Path(newPath).exists():
+            continue
+        
+        print 'rename' , movie['path'], newPath
+        os.rename(movie['path'], newPath)
+        db.updatePath(movie, newPath)
+        
+def clearEmptyFolders(dirs):
+    for dir in dirs:
+        if len(list(Path(dir).iterdir())) == 0:
+            print 'empty dir', dir
+            os.rmdir(str(dir))
+    

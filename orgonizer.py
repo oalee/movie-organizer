@@ -18,18 +18,22 @@ from pathlib import Path
 
 def currectName(name):
     name = name.lower()
-    cn = ""
-    qualities = [ "criterion", "director's cut"
-    , "blu-ray" , "directors cut" ,"director's cut" , "remastered"
-    "bdrip" , "x264" , "hdtv" , "xvid" , "ntsc",
-    "720" , "1080" , "brip" , "bluray" , "dvd" ,
-    "m-hd", "hd" , "web" , "brrip", 'extended']
-    for q in qualities:
-        if name.count(q) > 0:
-            cn = q
+    while 1:
+        cn = ""
+        qualities = [ "criterion", "director's cut"
+        , "blu-ray" , "directors cut" ,"director's cut" , "remastered"
+        "bdrip" , "x264" , "hdtv" , "xvid" , "ntsc",
+        "720" , "1080" , "brip" , "bluray" , "dvd" ,
+        "m-hd", "hd" , "web" , "brrip", 'extended', 'unrated','final cut',
+        "bdrip"]
+        for q in qualities:
+            if name.count(q) > 0:
+                cn = q
+                break
+        if len(cn)> 0:
+            name = name.split(cn)[0]
+        else:
             break
-    if len(cn)> 0:
-        name = name.split(cn)[0]
     forbidden_list = [ ")" , "(" , "]" , "[", "{" , "}"]
     name = name.replace("." , " ").replace('_' , " ")
     doReplace = False
@@ -95,6 +99,9 @@ def init_parser():
     
     parser.add_argument('--name', default=False, action="store_true",
                         help="corrects the name of folder to actual title")
+    parser.add_argument('--year', default=False, action="store_true",
+                        help="Makes Yearly Folder")
+    
     
         
     
@@ -107,10 +114,24 @@ def findMovies(directories):
     for movie in ft.getMovieList(directories):
         if db.movieExist(movie[1]) :
             continue
-        omovie = omdb.findMovieByName(currectName(movie[0]))
+        name = currectName(movie[0])
+        omovie = omdb.findMovieByName(name)
+        
+        if "and" in name and omovie == None:
+                omovie = omdb.findMovieByName(name.replace("and","&"))
         if omovie == None:
             print 'Err, Didnt find' , movie[1], "," ,currectName(movie[0])
-        else :
+            print "Enter Correct Name or press Enter for passing"
+
+        while omovie == None:
+            inputs = raw_input()
+            if inputs =="":
+                print 'skiping...'
+                break
+            omovie= omdb.findMovieByName(inputs)
+            if omovie != None:
+                print 'found the movie'
+        if omovie != None :
             omovie['path'] = movie[1]
             omovie['size'] = movie[2]
             db.insert(omovie)
@@ -154,6 +175,9 @@ if pars.d:
     duplicates = db.getDuplicates()
     if len(duplicates) == 0:
         print 'No Duplicates found'
+
+    else:
+        print len(duplicates),'Duplicates found'
     for item, movies in duplicates.iteritems():
 #        for j in o:
 #            print j['path'], j['size']/(1024*1024*1024.0) , "GB"
@@ -166,5 +190,10 @@ if pars.d:
             ft.keepSmallest(movies, db)
 
 if pars.name:
-    ft.renameMovieName(db)            
+    ft.renameMovieName(db)        
+
+if pars.year:
+    ft.makeYearlyFolders(db)    
+    
+ft.clearEmptyFolders(dirs)
    
