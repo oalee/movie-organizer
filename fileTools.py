@@ -2,6 +2,7 @@
 import subprocess, os
 from pathlib import Path
 from shutil import rmtree, move
+from unidecode import unidecode
 
 def du(path):
     """disk usage in human readable format (e.g. '2,1GB')"""
@@ -105,7 +106,7 @@ def makeYearlyFolders(db):
             os.mkdir(newPath)
             
         title = movie['Title'].replace("/"," ")
-        title = title.encode('ascii', 'ignore').decode('ascii')
+        title = unidecode(title)
         newPath = newPath+"/"+title
         if Path(newPath).exists():
             continue
@@ -120,3 +121,24 @@ def clearEmptyFolders(dirs):
             print 'empty dir', dir
             os.rmdir(str(dir))
     
+def createDirectorsSymlink(directorsMap, path):
+    
+    if not Path(path).exists():
+        os.mkdir(path)
+    
+    for director, movies in directorsMap.iteritems():
+        print director
+        if director == 'N/A':
+            continue
+        directorPath = path+"/"+ unidecode(director)
+        if not Path(directorPath).exists():
+            os.mkdir(directorPath)
+     
+        for movie in movies:
+            print movie["Title"]
+            symPath = directorPath+"/"+movie["Title"]
+            symPath = unidecode(symPath)
+            if not Path(symPath).exists():
+                os.symlink(movie['path'], symPath)
+        
+        print '------------'

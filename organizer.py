@@ -101,6 +101,8 @@ def init_parser():
                         help="corrects the name of folder to actual title")
     parser.add_argument('--year', default=False, action="store_true",
                         help="Makes Yearly Folder")
+    parser.add_argument('--directors', nargs=2,
+                        help="Makes Directors shortcut which have more than N movies")
     
     
         
@@ -157,9 +159,9 @@ if pars.parents:
     dirs = newDir + dirs
     print dirs
 
-if len(dirs) < 1 :
-    print 'atleast 1 directory must be selected';
-    exit()
+#if len(dirs) < 1 :
+#    print 'atleast 1 directory must be selected';
+#    exit()
 
 if pars.m:
     ft.folderMakes(dirs)
@@ -196,4 +198,9 @@ if pars.year:
     ft.makeYearlyFolders(db)    
     
 ft.clearEmptyFolders(dirs)
-   
+
+if pars.directors != None:
+        limit = int(pars.directors[0])
+        path = pars.directors[1]
+        print limit, path
+        ft.createDirectorsSymlink(db.getDirectorsMap(limit), path)
