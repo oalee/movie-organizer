@@ -35,6 +35,11 @@ optional arguments:
   --year                Makes Yearly Folder
 ```
 
+### Requirements
+* python2.7
+* pip install pathlib
+* pip install shutil
+
 ### Example
 
 ```
