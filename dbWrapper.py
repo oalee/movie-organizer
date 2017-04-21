@@ -46,9 +46,10 @@ def updatePath(item, newPath):
     getCollection().find_and_modify( { "_id" : item["_id"] }, item )
 
 def printAllMovies():
+    print 'printing movies in db'
     for movie in getCollection().find():
-        print movie
         print movie['Title'], movie['Year'], movie['path'], movie['size']
+    print 'end movies'
 
 def getDuplicates():
     movies = {}

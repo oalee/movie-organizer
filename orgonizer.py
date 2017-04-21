@@ -145,13 +145,21 @@ if pars.checkfiles:
     ft.checkFiles(db)
  
 findMovies(dirs)
+
 if pars.p:
     db.printAllMovies()
 
 if pars.d:
-    for item, o in db.getDuplicates().iteritems():
-        for j in o:
-            print j['path'], j['size']/(1024*1024*1024.0) , "GB"
+    for item, movies in db.getDuplicates().iteritems():
+#        for j in o:
+#            print j['path'], j['size']/(1024*1024*1024.0) , "GB"
+#        print 'end dup movie'
+        if pars.ask:
+            ft.keepAndAsk(movies, db)
+        if pars.bigest:
+            ft.keepBiggest(movies, db)
+        if pars.smallest:
+            ft.keepSmallest(movies, db)
 
 if pars.name:
     ft.renameMovieName(db)            

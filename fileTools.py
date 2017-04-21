@@ -60,7 +60,36 @@ def checkFiles(db):
             print 'no', movie['path']
             db.deletePath(movie['path'])
             
+def keepBiggest(movies, db):
+    sortedMovies = sortMoviesBySize(movies)
+    deleteMovies(sortedMovies[1:], db)
+    
+def keepSmallest(movies, db):
+    sortedMovies = sortMoviesBySize(movies)
+    deleteMovies(sortedMovies[:-1], db)
+    
+def keepAndAsk(movies, db):
+    sortedMovies = sortMoviesBySize(movies)
+    print 'Movie Duplicate', movies[0]['Title']
+    for movie in sortedMovies:
+        print  sortedMovies.index(movie), movie['path'], movie['size']
+    while 1:
+        index = input("Enter an index ")
+        if index < 0 or index >= len(sortedMovies):
+            print 'invalid index'
+            continue
+        sortedMovies.remove(sortedMovies[index])
+        deleteMovies(movies, db)
+        break
+    
+def sortMoviesBySize(movies):
+    return sorted(movies, key=getMovieKey, reverse=True)
+
+def getMovieKey(movie):
+    return movie['size']
             
-def deleteItem(movie, db):
-    rmtree(movie['path'])
-    db.deletePath(movie["path"])
+def deleteMovies(movies, db):
+    for movie in movies:
+        print 'deleting', movie['path']
+        rmtree(movie['path'])
+        db.deletePath(movie["path"])
