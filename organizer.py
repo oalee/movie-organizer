@@ -71,7 +71,7 @@ def correctName(name):
     
     
 def init_parser():
-    parser = argparse.ArgumentParser(description="Remove Duplicate movies where they have same imdb id")
+    parser = argparse.ArgumentParser(description="a movie organizer")
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument("--dirs", nargs='*', dest="dirs",
                         help="movies are in this directories")
@@ -79,11 +79,11 @@ def init_parser():
                         help="parent folder where movie dirs are")
     
     parser.add_argument('-c', default=False, action="store_true",
-                        help="clear database")
+                        help="clear database (for debugging) ")
     parser.add_argument('-p', default=False, action="store_true",
                         help="print all movies in database")
     parser.add_argument('-m', default=False, action="store_true",
-                        help="make folders for movies")
+                        help="make folders for movies if movie files (i.e, .mp4) is in directory")
     parser.add_argument('--checkfiles', default=False, action="store_true"
                         , dest="checkfiles"
                         , help="recheck database and files (deleted movies)")
@@ -92,10 +92,10 @@ def init_parser():
     parser.add_argument('--ask', default=False, action="store_true",
                         help="ask every duplicate movie to save which one\
                          . must use -d arg")
-    parser.add_argument('--bigest', default=False, action="store_true",
-                        help="save the bigest movie in case of duplicates. must use -d arg")
+    parser.add_argument('--biggest', default=False, action="store_true",
+                        help="keeps the biggest movie in case of duplicates. must use -d arg")
     parser.add_argument('--smallest', default=False, action="store_true",
-                        help="save the smallest movie in case of duplicates. must use -d arg")
+                        help="keeps the smallest movie in case of duplicates. must use -d arg")
     
     parser.add_argument('--name', default=False, action="store_true",
                         help="corrects the name of folder to actual title")
@@ -184,7 +184,7 @@ if pars.d:
 #        print 'end dup movie'
         if pars.ask:
             ft.keepAndAsk(movies, db)
-        if pars.bigest:
+        if pars.biggest:
             ft.keepBiggest(movies, db)
         if pars.smallest:
             ft.keepSmallest(movies, db)

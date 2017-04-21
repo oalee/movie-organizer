@@ -1,7 +1,44 @@
 
+# Simple Movie Organizer
+
+this is a movie organizer that works with files and folders. gets movies information from omdb api. correct the name of folder to match imdb title. sort all movies by year by creating year folders. removes duplicates .
+
+### Usage:
+```
+usage: organizer.py [-h] [--version] [--dirs [DIRS [DIRS ...]]]
+                    [--parents [PARENTS [PARENTS ...]]] [-c] [-p] [-m]
+                    [--checkfiles] [-d] [--ask] [--biggest] [--smallest]
+                    [--name] [--year]
+
+a movie organizer
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --dirs [DIRS [DIRS ...]]
+                        movies are in this directories
+  --parents [PARENTS [PARENTS ...]]
+                        parent folder where movie dirs are
+  -c                    clear database (for debugging)
+  -p                    print all movies in database
+  -m                    make folders for movies if movie files (i.e, .mp4) is
+                        in directory
+  --checkfiles          recheck database and files (deleted movies)
+  -d                    check duplicate movies
+  --ask                 ask every duplicate movie to save which one . must use
+                        -d arg
+  --biggest             keeps the biggest movie in case of duplicates. must
+                        use -d arg
+  --smallest            keeps the smallest movie in case of duplicates. must
+                        use -d arg
+  --name                corrects the name of folder to actual title
+  --year                Makes Yearly Folder
+```
+
+### Example
 
 ```
-sudo ./orgonizer.py --parents "/media/al/My Passport1/Movies"  "/media/al/My Passport/Movies" -m --checkfiles -d --bigest --year
+sudo ./organizer.py --parents "/media/al/My Passport/Movies" -m --checkfiles -d --bigest --year
 
 ```
 
