@@ -49,6 +49,28 @@ def getCollection():
     db = client['movies_db']
     return db['movies']
 
+def getDirectoresPaths():
+    global db
+    collection = None
+    if db == None:
+        client = pymongo.MongoClient()
+        db = client['movies_db']
+    collection = db['cache']
+    return collection.find( {"type" : "directorLinks"} )
+    
+def addDirectorsPath(path):
+    global db
+    collection = None
+    if db == None:
+        client = pymongo.MongoClient()
+        db = client['movies_db']
+    collection = db['cache']
+    item = {'path' : path, 'type' : 'directorLinks'}
+    l = [x for x in collection.find({'path' : path})]
+    if len(l) == 0:
+        collection.insert(item)
+    
+
 def findMoviesById(id):
     collection = getCollection()
     return collection.find( { "imdbID" : id })

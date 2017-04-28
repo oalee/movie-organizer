@@ -3,6 +3,7 @@ import subprocess, os
 from pathlib import Path
 from shutil import rmtree, move
 from unidecode import unidecode
+import re
 
 def du(path):
     """disk usage in human readable format (e.g. '2,1GB')"""
@@ -22,7 +23,10 @@ def getMovieList(dirs):
     movies_list = []
     for dir in dirs:
         if Path(dir).is_dir():
-            movies_list += [(str(x).split("/")[-1] , str(x) , get_size(str(x) )) for x in Path(dir).iterdir() if x.is_dir() ]
+            movies_list += [(str(x).split("/")[-1] , str(x) ,
+                             get_size(str(x) ),
+                             re.match('\d\d\d\d', str(x).split("/")[-2]) )
+            for x in Path(dir).iterdir() if x.is_dir() ]
             #Movie  Name , Location and size
     return movies_list
     
@@ -47,8 +51,11 @@ def renameMovieName( db):
     for item in db.getCollection().find():
         folderName = item['path'].split('/')[-1]
         title = item['Title'].replace("/"," ")
+        folderName = unidecode(folderName)
+        title = unidecode(title)
         if folderName != title :
             newPath = '/'.join(item['path'].split('/')[:-1]) +"/" +title
+            newPath = unidecode(newPath)
             print 'rename' , item['path'], newPath
             if Path(newPath).exists():
                 print "Err, items new path already exists, remove duplicates first"
@@ -138,7 +145,10 @@ def createDirectorsSymlink(directorsMap, path):
             print movie["Title"]
             symPath = directorPath+"/"+movie["Title"]
             symPath = unidecode(symPath)
+            
             if not Path(symPath).exists():
-                os.symlink(movie['path'], symPath)
-        
+                try:
+                    os.symlink(movie['path'], symPath)
+                except:
+                    pass
         print '------------'

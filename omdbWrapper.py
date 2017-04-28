@@ -7,18 +7,20 @@ Created on Wed Apr 12 12:45:23 2017
 """
 import requests
 
-def findMovieByName(name):
-    movie = searchMovie(name, "t")
+def findMovieByName(name, year):
+    movie = searchMovie(name, "t", year)
     if  movie == None:
-        print searchMovie(name, "s")
+        print searchMovie(name, "s", year)
         
         return 
     else:
         return movie
     
-def searchMovie(name, typeSearch):
+def searchMovie(name, typeSearch, year):
     url = 'http://www.omdbapi.com/'
     data = {typeSearch : name}
+    if year != None:
+        data['y'] = year
     response = requests.get(url, data)
     res = response.json()
     

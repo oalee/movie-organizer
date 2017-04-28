@@ -12,6 +12,7 @@ import omdbWrapper as omdb
 import argparse
 import sys
 import fileTools as ft
+import re
 from pathlib import Path
 
 
@@ -102,7 +103,7 @@ def init_parser():
     parser.add_argument('--year', default=False, action="store_true",
                         help="Makes Yearly Folder")
     parser.add_argument('--directors', nargs=2,
-                        help="Makes Directors shortcut which have more than N movies")
+                        help="Makes Directors shortcut which have more than N movies, first arg is the limit, 2nd arg is path")
     
     
         
@@ -117,10 +118,15 @@ def findMovies(directories):
         if db.movieExist(movie[1]) :
             continue
         name = correctName(movie[0])
-        omovie = omdb.findMovieByName(name)
+        year = None
+        if movie[3] != None:
+            year=movie[3].group()
+        omovie = omdb.findMovieByName(name, year)
         
         if "and" in name and omovie == None:
-                omovie = omdb.findMovieByName(name.replace("and","&"))
+            omovie = omdb.findMovieByName(name.replace("and","&"), year)
+        if omovie == None:
+            omovie = omdb.findMovieByName(movie[0], year)
         if omovie == None:
             print 'Err, Didnt find' , movie[1], "," ,correctName(movie[0])
             print "Enter Correct Name or press Enter for passing"
@@ -130,7 +136,7 @@ def findMovies(directories):
             if inputs =="":
                 print 'skiping...'
                 break
-            omovie= omdb.findMovieByName(inputs)
+            omovie= omdb.findMovieByName(inputs, None)
             if omovie != None:
                 print 'found the movie'
         if omovie != None :
@@ -157,11 +163,20 @@ if pars.parents:
     for dir in pars.parents:
         newDir += [x for x in Path(dir).iterdir()]
     dirs = newDir + dirs
-    print dirs
 
-#if len(dirs) < 1 :
-#    print 'atleast 1 directory must be selected';
-#    exit()
+print dirs
+for item in db.getDirectoresPaths():
+        print item
+        try:
+            dirs.remove(item['path'])
+        except:
+            pass
+        try:
+            dirs.remove(Path(item['path']))
+        except:
+            pass
+print dirs
+
 
 if pars.m:
     ft.folderMakes(dirs)
@@ -202,5 +217,6 @@ ft.clearEmptyFolders(dirs)
 if pars.directors != None:
         limit = int(pars.directors[0])
         path = pars.directors[1]
+        db.addDirectorsPath(path)
         print limit, path
         ft.createDirectorsSymlink(db.getDirectorsMap(limit), path)
