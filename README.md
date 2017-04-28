@@ -8,7 +8,7 @@ this is a movie organizer that works with files and folders. gets movies informa
 usage: organizer.py [-h] [--version] [--dirs [DIRS [DIRS ...]]]
                     [--parents [PARENTS [PARENTS ...]]] [-c] [-p] [-m]
                     [--checkfiles] [-d] [--ask] [--biggest] [--smallest]
-                    [--name] [--year]
+                    [--name] [--year] [--directors DIRECTORS DIRECTORS]
 
 a movie organizer
 
@@ -33,18 +33,21 @@ optional arguments:
                         use -d arg
   --name                corrects the name of folder to actual title
   --year                Makes Yearly Folder
+  --directors DIRECTORS DIRECTORS
+                        Makes Directors shortcut which have more than N
+                        movies, first arg is the limit, 2nd arg is path
 ```
 
 ### Requirements
 * python2.7
 * pip install pathlib
 * pip install shutil
+* pip install unidecode
 
 ### Example
 
 ```
-sudo ./organizer.py --parents "/media/al/My Passport/Movies" -m --checkfiles -d --bigest --year
-
+sudo ./organizer.py --parents "/media/al/My Passport/Movies" -m --checkfiles -d --bigest --year --directors 3 "/media/al/My Passport/Movies/Directors"
 ```
 
 ### Before :
@@ -1148,7 +1151,66 @@ sudo ./organizer.py --parents "/media/al/My Passport/Movies" -m --checkfiles -d 
 │   ├── The Confirmation
 │   └── The Counselor
 └── 2017
-    └── Louis C.K. 2017
+│   └── Louis C.K. 2017
+└── Directors
+        ├── Adam McKay
+        ├── Akira Kurosawa
+        ├── Alejandro Gonzalez Inarritu
+        ├── Alexander Payne
+        ├── Alfred Hitchcock
+        ├── Andrew Stanton
+        ├── Asghar Farhadi
+        ├── Bryan Singer
+        ├── Christopher Miller
+        ├── Christopher Nolan
+        ├── Clint Eastwood
+        ├── Danny Boyle
+        ├── Darren Aronofsky
+        ├── David Fincher
+        ├── David Lynch
+        ├── David O. Russell
+        ├── Denis Villeneuve
+        ├── Ethan Coen
+        ├── Federico Fellini
+        ├── Francis Ford Coppola
+        ├── George Lucas
+        ├── Guillermo del Toro
+        ├── Guy Ritchie
+        ├── Hayao Miyazaki
+        ├── Isao Takahata
+        ├── James Cameron
+        ├── Jeff Nichols
+        ├── Jim Jarmusch
+        ├── Joel Coen
+        ├── John Carney
+        ├── John Carpenter
+        ├── Kar-Wai Wong
+        ├── Kathryn Bigelow
+        ├── Krzysztof Kieslowski
+        ├── Lars von Trier
+        ├── Martin Scorsese
+        ├── Neill Blomkamp
+        ├── Oliver Stone
+        ├── Paul Greengrass
+        ├── Paul Thomas Anderson
+        ├── Peter Jackson
+        ├── Phil Lord
+        ├── Quentin Tarantino
+        ├── Richard Linklater
+        ├── Ridley Scott
+        ├── Robert Zemeckis
+        ├── Roman Polanski
+        ├── Ron Howard
+        ├── Sam Mendes
+        ├── Sidney Lumet
+        ├── Stanley Kubrick
+        ├── Steven Soderbergh
+        ├── Steven Spielberg
+        ├── Terrence Malick
+        ├── Terry Gilliam
+        ├── Terry Jones
+        ├── Tim Burton
+        └── Woody Allen
 
 542 directories, 0 files
 ```
