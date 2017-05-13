@@ -36,6 +36,9 @@ optional arguments:
   --directors DIRECTORS DIRECTORS
                         Makes Directors shortcut which have more than N
                         movies, first arg is the limit, 2nd arg is path
+
+  --write               write omdb data in movie folder/.omdb
+  --read                reads movie data that has been saved with --write
 ```
 
 ### Requirements
@@ -43,6 +46,11 @@ optional arguments:
 * pip install pathlib
 * pip install shutil
 * pip install unidecode
+* mongodb 3.4+
+* python mongoclient
+
+### Known Issues
+* when there are two movies with same name, manually move the movie to correct folder if its been placed in the wrong year and rerun the code with '--checkfiles' arg.
 
 ### Example
 

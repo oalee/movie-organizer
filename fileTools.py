@@ -4,6 +4,7 @@ from pathlib import Path
 from shutil import rmtree, move
 from unidecode import unidecode
 import re
+import json
 
 def du(path):
     """disk usage in human readable format (e.g. '2,1GB')"""
@@ -150,5 +151,28 @@ def createDirectorsSymlink(directorsMap, path):
                 try:
                     os.symlink(movie['path'], symPath)
                 except:
+                    os.remove(symPath)
+                    os.symlink(movie['path'], symPath)
                     pass
         print '------------'
+        
+def writeOmdbToFile(db):
+    for movie in db.getCollection().find():
+        filePath = movie['path'] +'/' + '.omdb'
+        movie.pop('_id', None)
+        json.dump(movie, open(filePath,'w'), sort_keys=True,
+                      indent=4, separators=(',', ': '))
+
+def isOmdbFileData(moviePath):
+    filePath = moviePath + "/.omdb"
+    return os.path.exists(filePath)
+    
+def readOmdbFromFile(moviePath):
+    if not isOmdbFileData(moviePath):
+        return None
+    filePath = moviePath + "/.omdb"
+    print 'opening'
+    with open(filePath) as jsonData:
+        return json.load(jsonData)
+    
+    

@@ -105,6 +105,10 @@ def init_parser():
     parser.add_argument('--directors', nargs=2,
                         help="Makes Directors shortcut which have more than N movies, first arg is the limit, 2nd arg is path")
     
+    parser.add_argument('--write', default=False, action="store_true",
+                        help="write omdb data in movie folder/.omdb")
+    parser.add_argument('--read', default=False, action="store_true",
+                        help="reads movie data that has been wrote with --write")
     
         
     
@@ -112,24 +116,28 @@ def init_parser():
 
 
 
-def findMovies(directories):
+def findMovies(directories, read):
     
     for movie in ft.getMovieList(directories):
         if db.movieExist(movie[1]) :
             continue
-        name = correctName(movie[0])
-        year = None
-        if movie[3] != None:
-            year=movie[3].group()
-        omovie = omdb.findMovieByName(name, year)
+        omovie = None
+        if read:
+            omovie = ft.readOmdbFromFile(movie[1])
+        if omovie == None:
+            name = correctName(movie[0])
+            year = None
+            if movie[3] != None:
+                year=movie[3].group()
+            omovie = omdb.findMovieByName(name, year)
         
-        if "and" in name and omovie == None:
-            omovie = omdb.findMovieByName(name.replace("and","&"), year)
-        if omovie == None:
-            omovie = omdb.findMovieByName(movie[0], year)
-        if omovie == None:
-            print 'Err, Didnt find' , movie[1], "," ,correctName(movie[0])
-            print "Enter Correct Name or press Enter for passing"
+            if "and" in name and omovie == None:
+                omovie = omdb.findMovieByName(name.replace("and","&"), year)
+            if omovie == None:
+                omovie = omdb.findMovieByName(movie[0], year)
+            if omovie == None:
+                print 'Err, Didnt find' , movie[1], "," ,correctName(movie[0])
+                print "Enter Correct Name or press Enter for passing"
 
         while omovie == None:
             inputs = raw_input()
@@ -183,7 +191,7 @@ if pars.m:
 if pars.checkfiles:
     ft.checkFiles(db)
  
-findMovies(dirs)
+findMovies(dirs, pars.read)
 
 if pars.p:
     db.printAllMovies()
@@ -220,3 +228,6 @@ if pars.directors != None:
         db.addDirectorsPath(path)
         print limit, path
         ft.createDirectorsSymlink(db.getDirectorsMap(limit), path)
+if pars.write:
+    ft.writeOmdbToFile(db)
+    
